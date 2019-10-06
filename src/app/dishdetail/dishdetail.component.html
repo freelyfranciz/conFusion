@@ -9,11 +9,11 @@
     fxLayout="row"
     fxLayout.sm="column"
     fxLayout.xs="column"
-    fxLayoutAlign.gt-md="space-around center"
+    fxLayoutAlign.gt-md="start"
     fxLayoutGap="10px" 
     fxLayoutGap.xs="0">
 
-   <div fxFlex="40" *ngIf="dish" >
+   <div fxFlex="40" *ngIf="dish">
      <!--<p>Display the details of the Dish here</p>-->   
      <!--The above code is replaced with the Angular material card component to display the details of the dish--> 
         <mat-card>
@@ -33,8 +33,29 @@
         </mat-card>
      </div>
 
-    <div fxFlex="40" *ngIf="dish">
+ 
+    <!--This code is replaced with the Angular material card component to display the details of the dish--> 
+    <!--<div fxFlex="40" *ngIf="dish">
        <p>Display the list of comments here</p>
-    </div>
+    </div> -->
+ 
+    <mat-list fxFlex="40" *ngIf="dish" >
+      <br>
+      <h3 matLine>
+        Comments
+      </h3>
+      <mat-list-item *ngFor="let comment of dish.comments" >    
+        <p matLine>
+          <span>{{comment.comment}}</span>
+        </p>
+        <p matLine>
+          <span>{{comment.rating}}</span>        
+        </p>
+        <p matLine>
+          <span>-- {{comment.author}} {{comment.date| date }}</span>
+       </p>
+      </mat-list-item>
+    </mat-list>
+ 
 
 </div>
