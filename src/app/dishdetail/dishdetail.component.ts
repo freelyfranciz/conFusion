@@ -1,8 +1,8 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import {Params, ActivatedRoute} from '@angular/router';
-import {Location, getLocaleDateTimeFormat, DatePipe} from '@angular/common';
-import {Dish} from'../shared/dish';
-import {DishService} from '../services/dish.service';
+import { Component, OnInit, ViewChild, Inject } from '@angular/core';
+import { Params, ActivatedRoute} from '@angular/router';
+import { Location, getLocaleDateTimeFormat, DatePipe} from '@angular/common';
+import { Dish } from'../shared/dish';
+import { DishService } from '../services/dish.service';
 import { switchMap } from 'rxjs/operators';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Comment } from '../shared/comment';
@@ -21,6 +21,7 @@ export class DishdetailComponent implements OnInit {
   comment: Comment;
   commentForm: FormGroup;
   @ViewChild('cfrom') commentFormDirective;
+  errMess: string;
 
   formErrors = {
     'author':'',
@@ -40,7 +41,8 @@ export class DishdetailComponent implements OnInit {
   constructor(private dishService: DishService,
     private route: ActivatedRoute,
     private location: Location,
-    private cmt: FormBuilder) { 
+    private cmt: FormBuilder,
+    @Inject('BaseURL') private BaseURL) { 
       this.createForm();
     }
 
@@ -49,7 +51,8 @@ export class DishdetailComponent implements OnInit {
       .subscribe((dishIds) => this.dishIds = dishIds);
       // const id = this.route.snapshot.params['id'];
       const id = this.route.params.pipe(switchMap((params: Params) => this.dishService.getDish(params['id'])))
-      .subscribe(dish => { this.dish = dish; this.setPrevNext(dish.id); });
+      .subscribe(dish => { this.dish = dish; this.setPrevNext(dish.id); },
+          errmess => this.errMess = <any>errmess);
   }
 
   createForm(){
