@@ -38,9 +38,9 @@
     </div>
   </div>
 
-  <div fxFlex fxFlexOffset="20px" class="form-size">
+  <div fxFlex fxFlexOffset="20px" class="form-size" [hidden]="timeout" [@expand]>
     <h3>Send us your Feedback</h3>
-    <p>{{ feedbackForm.value | json }} {{ feedbackForm.status | json }}</p>
+   <!-- <p>{{ feedbackForm.value | json }} {{ feedbackForm.status | json }}</p>-->
     <form novalidate [formGroup]="feedbackForm" #ffrom="ngForm" (ngSubmit)="onSubmit()">
       <p>
         <mat-form-field class="half-width">
@@ -94,5 +94,27 @@
         <button type="submit" mat-button class="background-primary text-floral-white"
         [disabled]="feedbackForm.invalid">Submit</button>
     </form>
+  </div>
+  <div [hidden]=" !timeout || errMess || fbCopy" [@expand]>
+    <h4>Submitting Form . . . Please Wait</h4>
+    <mat-spinner></mat-spinner>
+  </div>
+  <div>
+  <div fxFlex *ngIf="fbCopy" [@expand]>
+    <mat-list>
+      <mat-list-item></mat-list-item>
+      <h4 matLine>Your Submission</h4>
+      <p matLine>First Name: {{ feedbackForm.get('firstname').value }} </p>
+      <p matLine>Last Name: {{ feedbackForm.get('lastname').value }} </p>
+      <p matLine>Tel: {{ feedbackForm.get('telnum').value }} </p>
+      <p matLine>Email: {{ feedbackForm.get('email').value }} </p>
+      <p matLine>Contact you?: {{ feedbackForm.get('agree').value }} </p>
+      <p matLine>How?:{{ feedbackForm.get('contacttype').value }} </p>
+      <p matLine>Feedback: {{ feedbackForm.get('message').value }} </p> 
+    </mat-list>
+  </div>
+  <div fxFlex *ngIf="errMess">
+    <h2>Error</h2>
+    <h4>{{errMess}}</h4>
   </div>
 </div>

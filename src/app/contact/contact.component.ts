@@ -1,7 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Feedback, ContactType } from '../shared/feedback';
-import { flyInOut } from '../animations/app.animation';
+import { flyInOut, expand } from '../animations/app.animation';
+import { FeedbackService } from '../services/feedback.service';
+
 @Component({
   selector: 'app-contact',
   templateUrl: './contact.component.html',
@@ -11,7 +13,8 @@ import { flyInOut } from '../animations/app.animation';
     'style': 'display: block;'
   },
   animations:[
-    flyInOut()
+    flyInOut(),
+    expand()
   ]
 })
 export class ContactComponent implements OnInit {
@@ -20,6 +23,9 @@ export class ContactComponent implements OnInit {
   feedback: Feedback;
   contactType = ContactType;
   @ViewChild('ffrom') feedbackFormDirective;
+  errMess: string;
+  timeout: boolean;
+  fbCopy: Feedback;
 
   formErrors = {
     'firstname': '',
@@ -49,7 +55,8 @@ export class ContactComponent implements OnInit {
     }
   };
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder,
+    private feedbackService : FeedbackService) {
     this.createForm();
    }
 
@@ -96,16 +103,32 @@ onValueChange(data?: any){
   onSubmit(){
     this.feedback = this.feedbackForm.value;
     console.log(this.feedback);
-    this.feedbackForm.reset({
-    firstname: '',
-    lastname: '',
-    telnum: 0,
-    email: '',
-    agree: false,
-    contacttype: 'None',
-    message: ''
-    });
-    this.feedbackFormDirective.resetForm();
+
+    //saving data to json server
+    this.feedbackService.submitFeedback(this.feedback)
+    .subscribe(feedback => {
+      this.feedback = feedback;
+      this.fbCopy = feedback;
+      },
+      errmess => {this.feedback = null; this.fbCopy = null; this.errMess = <any>errmess;});
+
+    this.timeout= true;
+     setTimeout(feedbackForm => this.resetForm(), 5000);    
+    
   }
 
+  resetForm(){
+    this.feedbackForm.reset({
+      firstname: '',
+      lastname: '',
+      telnum: 0,
+      email: '',
+      agree: false,
+      contacttype: 'None',
+      message: ''
+      });
+      this.feedbackFormDirective.resetForm();
+      this.timeout =false;
+      this.fbCopy = null;
+  }
 }
